@@ -1060,5 +1060,7 @@ setInterval(()=>{
     }
 },1000);
 
-
+log("<h1>Welcome to the game</h1>");
+log("Remember to talk to the locals");
+log("Available commands listed in the input");
 var p = new Player({ start: map[0] });
