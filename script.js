@@ -331,7 +331,7 @@ document.addEventListener("keydown", function (e) {
                         var found = inv.find(other=>{
                             return other.ref == item.ref
                         });
-                        if(found) continue;
+                        if(found) return;
                         var common_items = p.inventory.filter(other=>{
                             return other.ref == item.ref
                         });
