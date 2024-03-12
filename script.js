@@ -339,7 +339,7 @@ document.addEventListener("keydown", function (e) {
                         inv.push({ name: item.name, ref: item.ref, quantity: num });
                     });
                     log("You have: " + inv.map(i => {
-                        return i.name + "("+i.quantity+")"
+                        return i.name + " ("+i.quantity+"x)"
                     }).join(", "));
                 } else {
                     log("You have no items");
