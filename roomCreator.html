@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel='stylesheet' href='./styles.css' />
+    <title>HTML</title>
+</head>
+
+<body>
+    <div id="data">
+        <p>Currently selected: <span id="selected"></span> (<span id="type"></span>)</p>
+        <input type="text" id="name" placeholder="Name">
+        <textarea id="description" placeholder="Description"></textarea>
+        <div id="code-out">
+            <textarea id="code"></textarea>
+            <button onclick="document.getElementById('code').select();document.execCommand('copy');">Copy</button>
+            <button id="generate">Generate</button>
+        </div>
+    </div>
+    <script>
+        var width = window.innerWidth;
+        var height = window.innerHeight - 500;
+
+        var brush = "land";
+        var color = "green";
+        document.addEventListener('keydown', function (event) {
+            if (event.key == "l") {
+                brush = "land";
+                color = "green";
+            } else if (event.key == "w") {
+                brush = "water";
+                color = "blue";
+            } else if (event.key == "f") {
+                brush = "forest";
+                color = "darkgreen";
+            } else if (event.key == "m") {
+                brush = "mountain";
+                color = "grey";
+            } else if (event.key == "s") {
+                brush = "sand";
+                color = "yellow";
+            } else if (event.key == "c") {
+                brush = "cave";
+                color = "black";
+            } else if (event.key == "p") {
+                brush = "path";
+                color = "brown";
+            } else if (event.key == "r") {
+                brush = "river";
+                color = "lightblue";
+            }
+        });
+        var pressed = false;
+        document.addEventListener("mousedown", (e) => {
+            pressed = true;
+        });
+        document.addEventListener("mouseup", (e) => {
+            pressed = false;
+        });
+
+        let table = document.createElement('table');
+        var cellID = 0
+        for (let i = 0; i < Math.floor(height / 50); i++) {
+            let row = document.createElement('tr');
+            for (let j = 0; j < Math.floor(width / 50); j++) {
+                let cell = document.createElement('td');
+                cell.id = cellID++;
+                cell.innerHTML = "&nbsp;";
+                row.appendChild(cell);
+            }
+            table.appendChild(row);
+        }
+        table.id = "table";
+        document.body.appendChild(table);
+        document.getElementById("table").addEventListener("mousemove", (e) => {
+            if (pressed) {
+                let cell = document.elementFromPoint(e.clientX, e.clientY);
+                if (cell.tagName == "TD") {
+                    cell.style.backgroundColor = color;
+                    cell.setAttribute("data-class", brush)
+                    cell.innerHTML = "&nbsp;";
+                }
+            }
+        });
+        document.getElementById("table").addEventListener("click", (e) => {
+            let cell = document.elementFromPoint(e.clientX, e.clientY);
+            if (cell.tagName == "TD") {
+                setCell(cell)
+            }
+        });
+        function setCell(cell) {
+            var sel_text = document.getElementById("selected");
+            var sel_type = document.getElementById("type");
+            var sel_name = document.getElementById("name");
+            var sel_description = document.getElementById("description");
+
+            sel_text.innerHTML = cell.id;
+            sel_type.innerHTML = cell.getAttribute("data-class");
+
+            sel_name.value = cell.getAttribute("data-name") || "";
+            sel_description.value = cell.getAttribute("data-description") || "";
+
+
+        }
+        document.getElementById("name").addEventListener("input", (e) => {
+            let cell = document.getElementById("selected").innerHTML;
+            document.getElementById(cell).setAttribute("data-name", e.target.value)
+        });
+        document.getElementById("description").addEventListener("input", (e) => {
+            let cell = document.getElementById("selected").innerHTML;
+            document.getElementById(cell).setAttribute("data-description", e.target.value)
+        });
+        document.getElementById("generate").onclick = (e) => {
+            var table = document.getElementById("table");
+            var cells = table.getElementsByTagName("td");
+            var code = "let map = [\n";
+            for (let i = 0; i < cells.length; i++) {
+                var north = i - Math.floor(width / 50);
+                var south = i + Math.floor(width / 50);
+                var east = i + 1;
+                var west = i - 1;
+
+                if (north < 0) north = null;
+                if (south >= cells.length) south = null;
+                if (east % Math.floor(width / 50) == 0) east = null;
+                if (west % Math.floor(width / 50) == Math.floor(width / 50) - 1) west = null;
+                if(!cells[i].getAttribute("data-name") || cells[i].getAttribute("data-name") == "") continue;
+                var text = `
+               new Room({
+                connections: {
+                    "north": ${north},
+                    "south": ${south},
+                    "east": ${east},
+                    "west": ${west}
+                },
+                name: "${cells[i].getAttribute("data-name") || ""}",
+                des: "${cells[i].getAttribute("data-description") || ""}",
+                items: [],
+                mobs: [],
+                id: ${i}
+            })
+               `
+                code += text;
+                if (i < cells.length - 1) code += ",\n";
+            }
+            code += "];";
+            document.getElementById("code").value = code;
+        }
+    </script>
+</body>
+
+</html>
