@@ -1048,7 +1048,10 @@ setInterval(()=>{
     }
     if(action == 1){
         if(room.in[0] instanceof Gregory) return;
-        room.in.shift();
+        var mobLeft = room.in.shift();
+        if(p.activeRoom.id == room.id){
+            log(`${mobLeft.name} has left`);
+        }
     }
     if(action == 2){
         if(room.name.toLowerCase().includes("forest") || room.name.toLowerCase().includes("prairie") || room.name.toLowerCase().includes("grassland") || room.name.toLowerCase().includes("path")){
