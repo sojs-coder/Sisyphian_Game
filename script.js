@@ -326,7 +326,21 @@ document.addEventListener("keydown", function (e) {
                 }
             } else if (move == "inventory") {
                 if (p.inventory.length >= 1) {
-                    log("You have: " + p.inventory.map(i => i.name).join(", "));
+                    var inv = [];
+                    p.inventory.forEach(item=>{
+                        var found = inv.find(other=>{
+                            return other.ref == item.ref
+                        });
+                        if(found) continue;
+                        var common_items = p.inventory.filter(other=>{
+                            return other.ref == item.ref
+                        });
+                        var num = common_items.length;
+                        inv.push({ name: item.name, ref: item.ref, quantity: num });
+                    });
+                    log("You have: " + inv.map(i => {
+                        return i.name + "("+i.quantity+")"
+                    }).join(", "));
                 } else {
                     log("You have no items");
                 }
@@ -1057,7 +1071,7 @@ setInterval(()=>{
         if(room.name.toLowerCase().includes("forest") || room.name.toLowerCase().includes("prairie") || room.name.toLowerCase().includes("grassland") || room.name.toLowerCase().includes("path")){
             room.items.push(new Item({name: "berry", ref: "berries"}));
         }
-        var generics = ["rock", "fish", "bone", "strip of leather","stick","sword","sheild","helmet","cast iron pan","whistle","coca-cola","toothpaste","pile of sand","juice","skull","leaf","flower"];
+        var generics = ["rock", "fish", "bone", "strip of leather","stick","sword","shield","helmet","cast iron pan","whistle","coca-cola","toothpaste","pile of sand","juice","skull","leaf","flower"];
         var generic = generics[Math.floor(Math.random() * generics.length)];
         room.items.push(new Item({name: generic, ref: generic}));
     }
