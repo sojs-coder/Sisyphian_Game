@@ -1049,7 +1049,7 @@ setInterval(()=>{
     if(action == 1){
         if(room.in[0] instanceof Gregory) return;
         var mobLeft = room.in.shift();
-        if(p.activeRoom.id == room.id){
+        if(p.activeRoom.uid == room.uid){
             log(`${mobLeft.name} has left`);
         }
     }
